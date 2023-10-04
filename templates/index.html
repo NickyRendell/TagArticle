@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Article Categorization</title>
+</head>
+<body>
+
+<form action="/" method="post">
+    <label for="url">Enter Web Address:</label>
+    <input type="text" id="url" name="url" required>
+    <button type="submit">Categorise</button>
+</form>
+
+{% if request.method == 'POST' %}
+    <h2>Results for {{ url }}:</h2>
+    <p>The article has been categorised as follows:</p>
+    <ul>
+        {% for key, value in results.items() %}
+            <li>{{ key }}: 
+                {% if value is iterable and not value is string %}
+                    <ul>
+                        {% for item in value %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {{ value }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+</body>
+</html>

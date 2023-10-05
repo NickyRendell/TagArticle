@@ -10,8 +10,9 @@ import os
 #env_path = r'C:\Remote\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
 
 #PC path
-env_path = r'C:\Users\charl\Dropbox\Dev\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
-
+#env_path = r'C:\Users\charl\Dropbox\Dev\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
+#laptop path
+env_path = r'C:\Remote\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
 
 
 # Load the .env file
@@ -20,13 +21,13 @@ load_dotenv(dotenv_path=env_path)
 
 def categorise_url(domain):
 
-    # Initialize the SK
-    # deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
-    # endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
-    # api_key = os.getenv('AZURE_OPENAI_KEY')
+    #Initialize the SK
+    deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+    endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+    api_key = os.getenv('AZURE_OPENAI_KEY')
     
-    deployment = os.getenv('GPT4_ENGINE')
-    endpoint = os.getenv('GPT4_BASE_URL') 
+    #deployment = os.getenv('GPT4_ENGINE')
+    #endpoint = os.getenv('GPT4_BASE_URL') 
     
         # Configure AI service used by the kernel
 

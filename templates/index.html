@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Article Categorization</title>
+    <title>Willmore Article Categorization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- You can also include other stylesheets or scripts here, e.g., Bootstrap -->
 </head>
 <body>
+
+<div class="header">
+    <h1>Willmore WebCat</h1>
+    <img src="{{ url_for('static', filename='Picture.webp') }}" alt="WebCat Logo" class="webcat-logo">
+</div>
 
 <form action="/" method="post">
     <label for="url">Enter Web Address:</label>
@@ -11,25 +18,28 @@
     <button type="submit">Categorise</button>
 </form>
 
-{% if request.method == 'POST' %}
-    <h2>Results for {{ url }}:</h2>
-    <p>The article has been categorised as follows:</p>
-    <ul>
-        {% for key, value in results.items() %}
-            <li>{{ key }}: 
-                {% if value is iterable and not value is string %}
-                    <ul>
-                        {% for item in value %}
-                            <li>{{ item }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    {{ value }}
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
 
+<div class="results-container">
+    {% if request.method == 'POST' %}
+        <h2>Results</h2>
+        <p>The article has been categorised as follows:</p>
+        <ul>
+            {% for key, value in results.items() %}
+                <li>{{ key }}: 
+                    {% if value is iterable and not value is string %}
+                        <ul>
+                            {% for item in value %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        {{ value }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
 </body>
 </html>
+

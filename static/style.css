@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 40px;
+}
+
+h1 {
+    font-size: 2em;
+    color: #333;
+    margin: 0;
+    padding: 20px 0;  /* Adjust as needed */
+}
+
+.results-container {
+    text-align: center;
+}
+
+.results-container ul {
+    display: inline-block;
+    text-align: left; /* This ensures the list items remain left-aligned */
+}
+
+
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

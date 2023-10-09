@@ -10,9 +10,9 @@ import os
 #env_path = r'C:\Remote\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
 
 #PC path
-#env_path = r'C:\Users\charl\Dropbox\Dev\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
+env_path = r'C:\Users\charl\Dropbox\Dev\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
 #laptop path
-env_path = r'C:\Remote\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
+#env_path = r'C:\Remote\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
 
 
 # Load the .env file

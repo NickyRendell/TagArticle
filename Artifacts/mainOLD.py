@@ -1,4 +1,5 @@
-import openai
+import semantic_kernel as sk
+from semantic_kernel.connectors.ai.open_ai import AzureTextCompletion, OpenAITextCompletion
 from dotenv import load_dotenv
 from scraper import get_article_text
 from PullCats import extract_categories_from_text, extract_category, extract_sentiment, extract_target_audience, extract_region
@@ -19,6 +20,14 @@ load_dotenv(dotenv_path=env_path)
  
 
 def categorise_url(domain):
+
+    #Initialize the SK
+    #deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+    #endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+    #api_key = os.getenv('AZURE_OPENAI_KEY')
+    
+    #deployment = os.getenv('GPT4_ENGINE')
+    #endpoint = os.getenv('GPT4_BASE_URL') 
 
     # OpenAPI settings
     api_key = os.getenv('OPENAI_API_KEY')

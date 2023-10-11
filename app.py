@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, jsonify
 from flask_httpauth import HTTPBasicAuth
-import main
+import article.TagArticle.Artifacts.OldMain2 as OldMain2
 # import other scripts if needed
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def get_pw(username):
 def index():
     if request.method == 'POST':
         url = request.form['url']
-        results = main.categorise_url(url)  # assuming your main module has a function like this
+        results = OldMain2.categorise_url(url)  # assuming your main module has a function like this
         
         return render_template('index.html', results=results, url=url)
     

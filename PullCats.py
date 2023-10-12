@@ -53,3 +53,12 @@ def extract_region(text):
         if region.lower() in text.lower():
             return region
     return None
+
+
+def extract_user_needs(text):
+    user_needs = ["Update me", "Educate me", "Give me an advantage", "Connect me", "Inspire me", "Entertain me"]
+    
+    for user_need in user_needs:
+        if user_need.lower() in text.lower():
+            return user_need
+    return None

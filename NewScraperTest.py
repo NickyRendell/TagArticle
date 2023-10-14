@@ -21,11 +21,11 @@ def get_article_text(url):
             # Check if 'access-restricted' is in its class
             if 'access-restricted' in content_div['class']:
                 is_access_restricted = "Y"
-                meta_description = soup.find('meta', {'name': 'description'})
-                if meta_description:
-                    return meta_description['content'], is_access_restricted
+                meta_descriptions = soup.find_all('meta', {'property': 'og:title'})
+                if len(meta_descriptions) > 1:
+                    return meta_descriptions[1]['content'], is_access_restricted
                 else:
-                    print("Error: Meta description not found.")
+                    print("Error: Second meta description not found.")
                     return None, is_access_restricted
             
             # If only the regular div is found, extract paragraphs from it
@@ -42,6 +42,6 @@ def get_article_text(url):
         return None, "N"
 
 # Usage
-article_content, access_flag = get_article_text("https://cphpost.dk/2023-10-11/general/ozempic-with-more-good-news-for-novo-houceprices-in-capital-area-way-up/")
+article_content, access_flag = get_article_text("https://cphpost.dk/2023-10-13/news/round-up/new-benefits-rule-for-all-immigrants-need-two-and-a-half-years-full-time-work/")
 print(article_content)
 print("Is Access Restricted?", access_flag)

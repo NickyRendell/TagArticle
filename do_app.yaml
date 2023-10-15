@@ -3,5 +3,5 @@ region: ams
 services:
   - name: web
     github:
-      repo: username/repo-name
+      repo: NickyRendell/TagArticle
       branch: main

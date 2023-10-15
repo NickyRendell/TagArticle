@@ -12,17 +12,17 @@ import json
 def categorise_url(domain):
 
     #PC path
-    env_path = r'C:\Users\charl\Dropbox\Dev\article\TagArticle\config\.env'
+    #env_path = r'C:\Users\charl\Dropbox\Dev\article\TagArticle\config\.env'
     #laptop path
     #env_path = r'C:\Remote\Article\ArticleCheck\config\.env'
 
     results = {}
 
     # Load the .env file
-    load_dotenv(dotenv_path=env_path)
+    #load_dotenv(dotenv_path=env_path)
 
     #org_id = os.getenv('OPENAI_ORG_ID')
-    openai.api_key = os.getenv('OPENAI_API_KEY')
+    openai.api_key = os.environ.get('OPENAI_API_KEY')
 
     ArticleText, Restricted = get_article_text(domain)
 

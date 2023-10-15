@@ -1,8 +1,8 @@
 
 
 def extract_categories_from_text(text):
-    categories = ["politics", "business", "technology", "health", "entertainment", 
-                  "sports", "science", "travel", "culture", "lifestyle", "education"]
+    categories = ["Politics", "Business", "Technology", "Health", "Entertainment", 
+                  "Sports", "Science", "Travel", "Culture", "Lifestyle", "Education"]
     
     for category in categories:
         if category.lower() in text.lower():

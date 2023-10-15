@@ -82,7 +82,7 @@ function = {
 
 
 r = openai.ChatCompletion.create(
-   model="gpt-3.5-turbo-0613",
+   model="gpt-4",
    temperature=0.3,
    messages=[{"role": "user", "content": content}],
    functions=[function],

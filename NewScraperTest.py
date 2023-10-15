@@ -42,6 +42,6 @@ def get_article_text(url):
         return None, "N"
 
 # Usage
-article_content, access_flag = get_article_text("https://cphpost.dk/2023-10-13/news/round-up/new-benefits-rule-for-all-immigrants-need-two-and-a-half-years-full-time-work/")
-print(article_content)
-print("Is Access Restricted?", access_flag)
+#article_content, access_flag = get_article_text("https://cphpost.dk/2023-10-13/news/round-up/new-benefits-rule-for-all-immigrants-need-two-and-a-half-years-full-time-work/")
+#print(article_content)
+#print("Is Access Restricted?", access_flag)

@@ -1,7 +1,7 @@
 import semantic_kernel as sk
-from semantic_kernel.connectors.ai.open_ai import AzureTextCompletion
+from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion, OpenAITextCompletion
 from dotenv import load_dotenv
-from scraper import get_article_text
+from NewScraperTest import get_article_text
 from PullCats import extract_categories_from_text, extract_sentiment, extract_target_audience, extract_region, extract_user_needs
 import os
 
@@ -24,16 +24,16 @@ def categorise_url(domain):
     load_dotenv(dotenv_path=env_path)
 
     #Initialize the SK
-    deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
-    endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
-    api_key = os.getenv('AZURE_OPENAI_KEY')
+    #deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+    #endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+    #api_key = os.getenv('AZURE_OPENAI_KEY')
     
     #deployment = os.getenv('GPT4_ENGINE')
     #endpoint = os.getenv('GPT4_BASE_URL') 
 
     # OpenAPI settings
-    #api_key = os.getenv('OPENAI_API_KEY')
-    #org_id = os.getenv('OPENAI_ORG_ID')
+    api_key = os.getenv('OPENAI_API_KEY')
+    org_id = os.getenv('OPENAI_ORG_ID')
 
 
     EngUserNeeds = """These are the descriptions of each user need\n
@@ -60,15 +60,24 @@ def categorise_url(domain):
 
 
     #Initialise
+
     kernel = sk.Kernel()
-
-
-    kernel.add_text_completion_service("dv", AzureTextCompletion(deployment, endpoint, api_key))
-
+    kernel.add_text_completion_service(
+        "chat_completion",
+        OpenAIChatCompletion(
+            "gpt-3.5-turbo-0613", 
+            api_key,
+            org_id
+        ),
+    )
     #set up a dict to store the results
     results = {}
 
-    ArticleText = str(get_article_text(domain))
+    ArticleText, Restricted = get_article_text(domain)
+
+    ArticleText = str(ArticleText)
+
+    results["Article Restricted"] = Restricted
 
     context = kernel.create_new_context()
 
@@ -76,14 +85,20 @@ def categorise_url(domain):
 
     firstPrompt = """You are a newspaper editor. Tasked with categorising the articles that your staff create. {{$history}} {{$userInput}}}"""  
 
-    summarize = kernel.create_semantic_function(firstPrompt, max_tokens= 1000, temperature=0.1, top_p=0.1)
+    summarize = kernel.create_semantic_function(firstPrompt, max_tokens= 1000, temperature=0.0, top_p=0.1)
 
-    context["userInput"] = f"""Firstly, based on these descriptions:\n
-    {EngUserNeeds}\n
-
-    Categorise the article in terms of whether the article is one of the following: update me, educate me, give me an advantage, connect me, inspire me, entertain me. Here is the article: {ArticleText}"""
+    if Restricted == "Y":
+        context["userInput"] = f"""Firstly, based on these descriptions:\n
+        {EngUserNeeds}\n
+        Please examine the following article byeline and return how you think it should categorised out of the of the following categories: update me, educate me, give me an advantage, connect me, inspire me, entertain me. Just return a single category without justification. Here is the byeline: """ + ArticleText
+    else:
+        context["userInput"] = f"""Firstly, based on these descriptions:\n
+        {EngUserNeeds}\n
+        Categorise the article in terms of whether the article is one of the following categories: update me, educate me, give me an advantage, connect me, inspire me, entertain me. Just return a single category without justification. Here is the article: """ + ArticleText
 
     bot_answer = summarize(context=context)
+
+    print(bot_answer)
 
     context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
 
@@ -92,9 +107,11 @@ def categorise_url(domain):
     #add the results to the dict
     results["User Need"] = CatSearch
 
-    context["userInput"] = "Excellent, now please return how you think it should categorised out of the following categories: Politics, Business, Technology, Health, Entertainment, Sports, Science, Travel, Culture, Lifestyle, Education. Here is the article: " + ArticleText
+    context["userInput"] = "Excellent, now please return how you think it should categorised out of the following categories: Politics, Business, Technology, Health, Entertainment, Sports, Science, Travel, Culture, Lifestyle, Education. Just return a single category without justification"
 
     bot_answer = (summarize(context=context))
+
+    print(bot_answer)
 
     context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
 
@@ -103,9 +120,11 @@ def categorise_url(domain):
     #add the results to the dict
     results["Category"] = CatSearch
 
-    context["userInput"] = "Now categorise in terms of sentiment: Positive, Neutral, Negative"
+    context["userInput"] = "Now categorise in terms of sentiment: Positive, Neutral, Negative. Just return a single category without justification"
 
     bot_answer = summarize(context=context)
+
+    print(bot_answer)
 
     context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
 
@@ -114,9 +133,11 @@ def categorise_url(domain):
     #add the results to the dict
     results["Sentiment"] = CatSearch
 
-    context["userInput"] = "Now categorise in terms of audience: General, Professionals, Youth/Teens, Seniors, Parents, Academics"
+    context["userInput"] = "Now categorise in terms of audience: General, Professionals, Youth/Teens, Seniors, Parents, Academics. Just return a single category without justification"
 
     bot_answer = summarize(context=context)
+
+    print(bot_answer)
 
     context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
 
@@ -125,11 +146,15 @@ def categorise_url(domain):
     #add the results to the dict
     results["Target Audience"] = CatSearch
 
-    context["userInput"] = "Finally, given that the article was written in Copenhagen, please categorise the region of the article: Local, National, International"
+    context["userInput"] = "Finally, given that the article was written in Copenhagen, please categorise the region of the article: Local, National, International. Just return a single category without justification"
 
     bot_answer = summarize(context=context)
 
+    print(bot_answer)
+
     CatSearch = extract_region(str(bot_answer))
+
+    print(context["history"])
 
     #add the results to the dict
     results["Region"] = CatSearch

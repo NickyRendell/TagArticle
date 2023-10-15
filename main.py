@@ -1,40 +1,40 @@
-import semantic_kernel as sk
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion, OpenAITextCompletion
+import os
+import openai
 from dotenv import load_dotenv
 from NewScraperTest import get_article_text
-from PullCats import extract_categories_from_text, extract_sentiment, extract_target_audience, extract_region, extract_user_needs
-import os
+import json
+#from scraper import get_article_text
 
 # Specify the path to the .env file
 #This is the laptop path
 #env_path = r'C:\Remote\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
 
-#PC path
-#env_path = r'C:\Users\charl\Dropbox\Dev\DC.RandD\Ontology\OntCreate\OntologyCreation\config\.env'
-#laptop path
-
- 
-
 def categorise_url(domain):
 
+    #PC path
     env_path = r'C:\Users\charl\Dropbox\Dev\article\TagArticle\config\.env'
+    #laptop path
+    #env_path = r'C:\Remote\Article\ArticleCheck\config\.env'
 
+    results = {}
 
-# Load the .env file
+    # Load the .env file
     load_dotenv(dotenv_path=env_path)
 
-    #Initialize the SK
-    #deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
-    #endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
-    #api_key = os.getenv('AZURE_OPENAI_KEY')
-    
-    #deployment = os.getenv('GPT4_ENGINE')
-    #endpoint = os.getenv('GPT4_BASE_URL') 
+    #org_id = os.getenv('OPENAI_ORG_ID')
+    openai.api_key = os.getenv('OPENAI_API_KEY')
 
-    # OpenAPI settings
-    api_key = os.getenv('OPENAI_API_KEY')
-    org_id = os.getenv('OPENAI_ORG_ID')
+    ArticleText, Restricted = get_article_text(domain)
 
+    results['Is article restricted?'] = Restricted
+
+    ArticleText = str(ArticleText)
+
+    ArticleText = ' '.join(ArticleText.split())
+
+    print(ArticleText)
+
+    #text = "Marko’s ambiguous comments about Pérez’s future in the team have ignited a flurry of speculation in the racing world. He suggested that the decision now rests solely with Pérez, adding that Red Bull currently has no alternatives. This statement follows Pérez’s less-than-stellar performance at the Qatar Grand Prix, where he qualified 13th and was embroiled in a three-car collision during the sprint race."
 
     EngUserNeeds = """These are the descriptions of each user need\n
     Update me : Tells the reader about something that just happened or came to light. \
@@ -59,114 +59,52 @@ def categorise_url(domain):
     Provides a respite where the reader can take their mind away from their own and the world's problems. Distracts your mind with something fun, exciting, interesting, fascinating or entertaining."""
 
 
-    #Initialise
+    content = f"###Categorise Article accoring to user needs###\n{EngUserNeeds}\n\n###Instructions###\nYou are a newspaper editor, given the above descriptions of the different user needs categories, return just one of categories that best applies to the following text: \n{ArticleText}\n"
 
-    kernel = sk.Kernel()
-    kernel.add_text_completion_service(
-        "chat_completion",
-        OpenAIChatCompletion(
-            "gpt-3.5-turbo-0613", 
-            api_key,
-            org_id
-        ),
+
+    function = {
+        #We will change the payload as needed
+    "name": "predict_user_need",
+    "description": "Article categorisation into user needs.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "prediction": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "Update me",
+                        "Educate me",
+                        "Give me an advantage",
+                        "Connect me",
+                        "Inspire me",
+                        "Entertain me",
+                        "None"
+                    ]
+                },
+                "description": "Predicting user needs."
+            }
+        },
+        "required": [
+            "prediction"
+        ]
+    }
+    }
+
+
+    r = openai.ChatCompletion.create(
+    model="gpt-4",
+    temperature=0.3,
+    messages=[{"role": "user", "content": content}],
+    functions=[function],
+    function_call={"name": "predict_user_need"},
     )
-    #set up a dict to store the results
-    results = {}
 
-    ArticleText, Restricted = get_article_text(domain)
 
-    ArticleText = str(ArticleText)
-
-    results["Article Restricted"] = Restricted
-
-    context = kernel.create_new_context()
-
-    context["history"] = ""
-
-    firstPrompt = """You are a newspaper editor. Tasked with categorising the articles that your staff create. {{$history}} {{$userInput}}}"""  
-
-    summarize = kernel.create_semantic_function(firstPrompt, max_tokens= 1000, temperature=0.0, top_p=0.1)
-
-    if Restricted == "Y":
-        context["userInput"] = f"""Firstly, based on these descriptions:\n
-        {EngUserNeeds}\n
-        Please examine the following article byeline and return how you think it should categorised out of the of the following categories: update me, educate me, give me an advantage, connect me, inspire me, entertain me. Just return a single category without justification. Here is the byeline: """ + ArticleText
-    else:
-        context["userInput"] = f"""Firstly, based on these descriptions:\n
-        {EngUserNeeds}\n
-        Categorise the article in terms of whether the article is one of the following categories: update me, educate me, give me an advantage, connect me, inspire me, entertain me. Just return a single category without justification. Here is the article: """ + ArticleText
-
-    bot_answer = summarize(context=context)
-
-    print(bot_answer)
-
-    context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
-
-    CatSearch = extract_user_needs(str(bot_answer))
-
-    #add the results to the dict
-    results["User Need"] = CatSearch
-
-    context["userInput"] = "Excellent, now please return how you think it should categorised out of the following categories: Politics, Business, Technology, Health, Entertainment, Sports, Science, Travel, Culture, Lifestyle, Education. Just return a single category without justification"
-
-    bot_answer = (summarize(context=context))
-
-    print(bot_answer)
-
-    context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
-
-    CatSearch = extract_categories_from_text(str(bot_answer))
-
-    #add the results to the dict
-    results["Category"] = CatSearch
-
-    context["userInput"] = "Now categorise in terms of sentiment: Positive, Neutral, Negative. Just return a single category without justification"
-
-    bot_answer = summarize(context=context)
-
-    print(bot_answer)
-
-    context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
-
-    CatSearch = extract_sentiment(str(bot_answer))
-
-    #add the results to the dict
-    results["Sentiment"] = CatSearch
-
-    context["userInput"] = "Now categorise in terms of audience: General, Professionals, Youth/Teens, Seniors, Parents, Academics. Just return a single category without justification"
-
-    bot_answer = summarize(context=context)
-
-    print(bot_answer)
-
-    context["history"] += f"\nUser: {context['userInput']}\nChatBot: {bot_answer}\n"
-
-    CatSearch = extract_target_audience(str(bot_answer))
-
-    #add the results to the dict
-    results["Target Audience"] = CatSearch
-
-    context["userInput"] = "Finally, given that the article was written in Copenhagen, please categorise the region of the article: Local, National, International. Just return a single category without justification"
-
-    bot_answer = summarize(context=context)
-
-    print(bot_answer)
-
-    CatSearch = extract_region(str(bot_answer))
-
-    print(context["history"])
-
-    #add the results to the dict
-    results["Region"] = CatSearch
-
+    results["User Need"] = json.loads(r["choices"][0]["message"]["function_call"]["arguments"])["prediction"]
+    print(results)
     return results
 
-# #print(results)
 
-# print("The article has been categorised as follows: ")
-# print("Categories: " + str(results["Categories"]))
-# print("TypeCategory: " + str(results["TypeCategory"]))
-# print("Sentiment: " + str(results["Sentiment"]))
-# print("TargetAudience: " + str(results["TargetAudience"]))
-# print("Region: " + str(results["Region"]))
-
+    

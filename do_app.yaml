@@ -1,0 +1,7 @@
+name: will-webcat
+region: ams
+services:
+  - name: web
+    github:
+      repo: username/repo-name
+      branch: main

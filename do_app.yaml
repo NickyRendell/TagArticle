@@ -1,7 +1,0 @@
-name: will-webcat
-region: ams
-services:
-  - name: web
-    github:
-      repo: NickyRendell/TagArticle
-      branch: main

@@ -18,8 +18,8 @@ def get_article_text(url):
         
         # If the div is found
         if content_div:
-            # Check if 'access-restricted' is in its class
-            if 'access-restricted' in content_div['class']:
+            woocommerce_div = soup.find('div', class_='woocommerce')
+            if woocommerce_div:
                 is_access_restricted = "Y"
                 meta_descriptions = soup.find_all('meta', {'property': 'og:title'})
                 if len(meta_descriptions) > 1:
@@ -27,6 +27,17 @@ def get_article_text(url):
                 else:
                     print("Error: Second meta description not found.")
                     return None, is_access_restricted
+
+            
+            # Check if 'access-restricted' is in its class
+            #if 'access-restricted' in content_div['class']:
+                # is_access_restricted = "Y"
+                # meta_descriptions = soup.find_all('meta', {'property': 'og:title'})
+                # if len(meta_descriptions) > 1:
+                #     return meta_descriptions[1]['content'], is_access_restricted
+                # else:
+                #     print("Error: Second meta description not found.")
+                #     return None, is_access_restricted
             
             # If only the regular div is found, extract paragraphs from it
             else:

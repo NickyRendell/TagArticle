@@ -24,13 +24,22 @@ def categorise_url(domain):
     #org_id = os.getenv('OPENAI_ORG_ID')
     openai.api_key = os.environ.get('OPENAI_API_KEY')
 
-    ArticleText, Restricted = get_article_text(domain)
+    ArticleText, excerpt, Restricted = get_article_text(domain)
 
     results['Is article restricted?'] = Restricted
 
     ArticleText = str(ArticleText)
 
+    excerpt = str(excerpt)  
+
     ArticleText = ' '.join(ArticleText.split())
+
+    excerpt = ' '.join(excerpt.split())
+
+    #if article is restricted, join the article text and the excerpt with a newline inbetween
+    if Restricted == "Y":
+        ArticleText = ArticleText + "\n" + excerpt
+    
 
     print(ArticleText)
 
@@ -107,4 +116,3 @@ def categorise_url(domain):
     return results
 
 
-    

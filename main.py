@@ -112,6 +112,7 @@ def categorise_url(domain):
 
 
     results["User Need"] = json.loads(r["choices"][0]["message"]["function_call"]["arguments"])["prediction"]
+    results["text"] = ArticleText
     print(results)
     return results
 

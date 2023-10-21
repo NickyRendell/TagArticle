@@ -30,14 +30,18 @@ def categorise_url(domain):
 
     ArticleText = str(ArticleText)
 
-    excerpt = str(excerpt)  
+    #excerpt = str(excerpt)  
 
     ArticleText = ' '.join(ArticleText.split())
 
-    excerpt = ' '.join(excerpt.split())
+    #excerpt = ' '.join(excerpt.split())
 
     #if article is restricted, join the article text and the excerpt with a newline inbetween
     if Restricted == "Y":
+        excerpt = str(excerpt)  
+        excerpt = ' '.join(excerpt.split())
+        excerpt = excerpt.split("Full version of this article")[0].strip()
+        ArticleText = ArticleText.split("The Copenhagen Post")[0].strip()
         ArticleText = ArticleText + "\n" + excerpt
     
 
@@ -112,8 +116,11 @@ def categorise_url(domain):
 
 
     results["User Need"] = json.loads(r["choices"][0]["message"]["function_call"]["arguments"])["prediction"]
-    results["text"] = ArticleText
-    print(results)
+
+    if Restricted == "Y":
+        results["text"] = ArticleText
+
+
     return results
 
 

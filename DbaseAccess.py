@@ -4,7 +4,7 @@ import codecs
 from bs4 import BeautifulSoup
 
 # Define the API endpoint for the second page with the specific fields
-api_endpoint = "https://cphpost.dk/wp-json/wp/v2/posts?page=1&_fields=author,id,excerpt,title,link"
+api_endpoint = "https://cphpost.dk/wp-json/wp/v2/posts?page=2&_fields=author,id,excerpt,title"
 
 # Make a GET request to the API
 response = requests.get(api_endpoint)
@@ -13,6 +13,8 @@ response = requests.get(api_endpoint)
 if response.status_code == 200:
     # Get the response text as a string
     response_text = response.text
+
+    print(response_text)
 
     # Find the index of '<div class="woocommerce">'
     woocommerce_index = response_text.find(r'<div class=\"woocommerce\">')
@@ -43,7 +45,7 @@ if response.status_code == 200:
             soup = BeautifulSoup(raw_excerpt, 'html.parser')
             cleaned_excerpt = soup.get_text()
 
-            # Print the extracted information
+            Print the extracted information
             print("Raw ID:", raw_id)
             print("Cleaned Title:", cleaned_title)
             print("Cleaned Excerpt:", cleaned_excerpt)

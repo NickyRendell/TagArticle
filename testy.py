@@ -1,26 +1,13 @@
-import requests
-import json
-from html import unescape
-
-# Define the API endpoint for the second page with the specific fields
-api_endpoint = "https://cphpost.dk/wp-json/wp/v2/posts?page=2&_fields=author,id,excerpt,title"
-
-# Make a GET request to the API
-response = requests.get(api_endpoint)
-
-# Check if the request was successful (status code 200)
-if response.status_code == 200:
-    # Parse the response text as JSON
-    response_text = response.text
-    error_position = 4294
-    print(response_text[error_position-50:error_position+50])
-
-    decoded_text = unescape(response_text)
-
-    try:
-        articles = json.loads(decoded_text)
-        for article in articles:
-            print(article['title']['rendered'])
-    except json.JSONDecodeError as e:
-        print("Failed to parse response as JSON. Error:", str(e))
+def print_nearby_chars(text, position, radius=10):
+    start = max(0, position - radius)
+    end = min(len(text), position + radius + 1)
+    nearby_text = text[start:end]
     
+    print("Context around position {}:".format(position))
+    print(nearby_text)
+    print(" " * (position - start) + "^-- position {}".format(position))
+
+# Example usage:
+json_text = """" [{"id":154547,"title":{"rendered":"Respected duo stand forward to lead Venstre"},"excerpt":{"rendered":"Troels Lund Poulsen and Stehpanie Lose are now official candidates to take the helm of Venstre. The duo is expected to be officially elected in November  \t\t<div class=\"woocommerce\">\n\t\t\t<div class=\"woocommerce-info wc-memberships-restriction-message wc-memberships-message wc-memberships-content-restricted-message\">\n\t\t\t\t\n<div class=\"wp-block-group paywall_login is-layout-flow wp-block-group-is-layout-flow\"><div class=\"wp-block-group__inner-container\">\n<hr class=\"wp-block-separator has-text-color has-black-color has-alpha-channel-opacity has-black-background-color has-background is-style-wide\" \/>\n\n\n\n<h2 class=\"wp-block-heading\">Full version of this article is only available to subscribers.<\/h2>\n\n\n\n<p><strong>Already a subscriber, sign in here:<\/strong><\/p>\n\n\n<div class=\"logged-out wp-block-button__link wp-element-button btn wp-block-loginout\"><a rel=\"nofollow\" href=\"https:\/\/cphpost.dk\/wp-login.php?redirect_to=https%3A%2F%2Fcphpost.dk%2Fwp-json%2Fwp%2Fv2%2Fposts%3Fpage%3D1%26_fields%3Did%2Ctitle%2Cexcerpt\">Log in<\/a><\/div>\n\n\n<div>\n\t<p class=\"woocommerce-LostPassword lost_password\">\n\t\t<a href=\"https:\/\/cphpost.dk\/my-account\/lost-password\/\">Lost your password?<\/a>\n\t<\/p>\n<\/div>\n\n<\/div><\/div>\n\n\n\n<hr class=\"wp-block-separator has-text-color has-black-color has-alpha-channel-opacity has-black-background-color has-background is-style-wide"""
+position = 221
+print_nearby_chars(json_text, position)
